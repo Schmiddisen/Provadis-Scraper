@@ -14,3 +14,12 @@ PASSWORD=deinpasswort
 ```(bash)
 python main.py
 ```
+6. Ein Ordner mit dem Namen "Provadis-Coach-Mirror" muss einen Ordner "über" dem sein, in dem das Script ausgeführt wird.
+Beispielhafte Ordnerstruktur:
+```
+Dokumente
+----Provadis-Coach-Mirror
+----Provadis-Scraper
+--------main.py
+--------(restliche Dateien)
+```
