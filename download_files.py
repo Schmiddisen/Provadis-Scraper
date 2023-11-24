@@ -31,7 +31,7 @@ def download():
     db_handler.close()
 
     # Set save path
-    path = os.path.join(os.getcwd(), "..", "Hochschule")
+    path = os.path.join(os.getcwd(), "..", "Provadis-Coach-Mirror")
 
     # Download files
     for entry in entries:

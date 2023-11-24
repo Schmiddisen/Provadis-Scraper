@@ -5,5 +5,5 @@ from download_files import download
 
 
 if __name__ == "__main__":
-    scrape_coach(amount_of_files=20, headless=False)
+    scrape_coach(amount_of_files=1500, headless=False)
     download()
