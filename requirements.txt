@@ -1,0 +1,5 @@
+urllib3==1.25.11
+requests
+selenium==3.141
+msedge-selenium-tools
+python-dotenv
