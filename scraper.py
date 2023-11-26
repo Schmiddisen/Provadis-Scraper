@@ -19,6 +19,18 @@ email = os.getenv("EMAIL")
 # Initialize Database
 db_handler = DatabaseHandler()
 
+class EmptyVariableException(Exception):
+    def __init__(self, variable_name):
+        self.variable_name = variable_name
+        self.message = f"[!] Error: Variable '{variable_name}' is empty or has no content."
+        super().__init__(self.message)
+
+def check_variables(*variables):
+    for var in variables:
+        if not var:
+            raise EmptyVariableException(str(var))
+
+
 def click_login_button(driver: Edge):
     """
     This method clicks the login button. It is needed because the button is sometimes not found.
@@ -96,6 +108,7 @@ def process_table_rows(table_rows, db_handler: DatabaseHandler, driver: Edge):
             file_url = file_link.get_attribute("href")
             directory_name = row.find_element(By.XPATH, './td[last()]').text
             file_name = file_link.text
+            check_variables(file_link, file_url, directory_name, file_name)
             db_handler.insert_entry(directory_name, file_name, file_url)
         return
     except StaleElementReferenceException:
