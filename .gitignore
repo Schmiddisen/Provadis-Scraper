@@ -4,3 +4,5 @@
 .env.staging
 cookies.json
 *.pyc
+file_links.db
+*.db
