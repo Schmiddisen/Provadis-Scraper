@@ -2,6 +2,8 @@
 and save the file links in a database."""
 import json
 import os
+from time import sleep
+
 from dotenv import load_dotenv
 from msedge.selenium_tools import Edge, EdgeOptions
 from selenium.webdriver.common.by import By
@@ -9,12 +11,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import *
+
 from utils import DatabaseHandler
 
 # Load environment variables
 load_dotenv()
-password = os.getenv("PASSWORD")
-email = os.getenv("EMAIL")
+LOGIN_URL = "https://hochschule.provadis-coach.de/view.php?view=files"
+EMAIL = os.getenv("EMAIL")
+PASSWORD = os.getenv("PASSWORD")
  
 # Initialize Database
 db_handler = DatabaseHandler()
@@ -31,62 +35,36 @@ def check_variables(*variables):
             raise EmptyVariableException(str(var))
 
 
-def click_login_button(driver: Edge):
-    """
-    This method clicks the login button. It is needed because the button is sometimes not found.
-    """
-    login_submit_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-report-event='Signin_Submit']"))
-    )
-    login_submit_button.click()
-
-
 def login_process_microsoft(driver: Edge):
     """
     This method handles the login process for the microsoft login page.
     """
     wait = WebDriverWait(driver, 10)
-    email_elem =wait.until(
-        EC.element_to_be_clickable((By.ID, "i0116"))
-    )
-    print("[i] Sending email")
-    email_elem.send_keys(email)
+    wait.until(EC.element_to_be_clickable((By.ID, "i0116"))).send_keys(EMAIL)
+    wait.until(EC.element_to_be_clickable((By.ID, "idSIButton9"))).click()
+    wait.until(EC.element_to_be_clickable((By.NAME, "passwd"))).send_keys(PASSWORD)
 
-    send_button = driver.find_element(By.ID, "idSIButton9")
-    send_button.click()
-    print("[i] Navigating to password page")
+    for _ in range(3):  # Retry login a few times if needed
+        try:
+            wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-report-event='Signin_Submit']"))).click()
+            break  # Exit loop if login is successful
+        except StaleElementReferenceException:
+            sleep(1)  # Brief pause before retry
 
-    password_elem =wait.until(
-        EC.element_to_be_clickable((By.NAME, "passwd"))
-    )
-    print("[i] Sending password")
-    password_elem.send_keys(password)
-
-    print("[i] Clicking login button")
-    try:
-        click_login_button(driver)
-    except StaleElementReferenceException:
-        click_login_button(driver)
-
-    # Skip stay signed in
-    no_button =wait.until(
-        EC.element_to_be_clickable((By.ID, "idBtn_Back"))
-    )
-    no_button.click()
+    wait.until(EC.element_to_be_clickable((By.ID, "idBtn_Back"))).click()  # Skip stay signed in
 
 def set_files_per_page(driver: Edge, amount_of_files):
     wait = WebDriverWait(driver, 50)
-    if amount_of_files != 0:
-        select_element = wait.until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, 'select[name="files_table_length"]'))
-        )
+    if amount_of_files == 0:
+        return
+    
+    select_element = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'select[name="files_table_length"]')))
 
-        driver.execute_script(f"arguments[0].add(new Option({amount_of_files}, {amount_of_files}));", select_element)
-        select = Select(select_element)
-        select.select_by_value(str(amount_of_files))
-        wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tr[class='odd'], tr[class='even']")))
-    else:
-        wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tr[class='odd'], tr[class='even']")))
+    driver.execute_script(f"arguments[0].add(new Option({amount_of_files}, {amount_of_files}));", select_element)
+    select = Select(select_element)
+    select.select_by_value(str(amount_of_files))
+    wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "tr[class='odd'], tr[class='even']")))
+    
 
 def get_table_rows(driver: Edge):
     wait = WebDriverWait(driver, 10)
@@ -128,38 +106,27 @@ def scrape_coach(amount_of_files=0, headless=True):
     edge_options.add_argument("--inprivate")
     if headless:
         edge_options.add_argument("--headless")
+    edge_options.add_argument("--log-level=OFF")
+        
     driver = Edge(options=edge_options, executable_path="./msedgedriver.exe")
 
     # Navigate to website
-    driver.get("https://hochschule.provadis-coach.de/view.php?view=files")
+    driver.get(LOGIN_URL)
 
     wait = WebDriverWait(driver, 10)
 
     # Start login process
-    try:
-        login_button = wait.until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, ".btn.btn-lg.btn-default.btn-block"))
-        )
-        login_button.click()
-    except Exception as e:
-        print(f"[!] Error clicking login button: {e}")
-        return
+    wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".btn.btn-lg.btn-default.btn-block"))).click()
 
     print("[i] logging in")
     login_process_microsoft(driver)
 
     print("[i] Navigating to file section")
     # Change to file view
-    files_button =wait.until(
-        EC.element_to_be_clickable((By.ID, "files"))
-    )
-    files_button.click()
+    wait.until(EC.element_to_be_clickable((By.ID, "files"))).click()
 
     # Change to list view
-    displaymode_button =wait.until(
-        EC.element_to_be_clickable((By.ID, "displaymode"))
-    )
-    displaymode_button.click()
+    wait.until(EC.element_to_be_clickable((By.ID, "displaymode"))).click()
 
     set_files_per_page(driver, amount_of_files)
 

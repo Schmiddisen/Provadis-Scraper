@@ -20,7 +20,7 @@ if __name__ == "__main__":
         print("[i] A possible fix might be deleting 'file_links.db'.")
         continue_download = False
     except Exception as e:
-        print("[!] A fatal error occured while scraping the provadis coach!")
+        print("[!] A fatal error occurred while scraping the provadis coach!")
         print("[!] If this issue persists, consider reporting it.")
         traceback.print_exc()
         continue_download = True
@@ -28,7 +28,7 @@ if __name__ == "__main__":
         try:
             download()
         except Exception as e:
-            print("[!] A fatal error occured while downloading the files!")
+            print("[!] A fatal error occurred while downloading the files!")
             print("[!] If this issue persists, consider reporting it.")
             traceback.print_exc()
 
