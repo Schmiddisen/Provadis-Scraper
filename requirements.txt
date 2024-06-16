@@ -3,3 +3,4 @@ requests
 selenium==3.141
 msedge-selenium-tools
 python-dotenv
+webdriver-manager

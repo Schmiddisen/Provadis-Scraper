@@ -7,3 +7,5 @@ cookies.json
 file_links.db
 *.db
 main.exe
+venv/
+geckodriver.log

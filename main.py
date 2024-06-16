@@ -6,14 +6,18 @@ from download_files import download
 
 amount_of_files = 1500
 headless = True
+browser = "edge"
 
 if len(sys.argv) > 1:
-    amount_of_files = sys.argv[1]
-    headless =  sys.argv[2]
+    amount_of_files = int(sys.argv[1])
+if len(sys.argv) > 2:
+    headless = sys.argv[2].lower() in ['true', '1', 't', 'y', 'yes']
+if len(sys.argv) > 3:
+    browser = sys.argv[3].lower()
 
 if __name__ == "__main__":
     try:
-        scrape_coach(amount_of_files=amount_of_files, headless=headless)
+        scrape_coach(amount_of_files=amount_of_files, headless=headless, browser=browser)
         continue_download = True
     except EmptyVariableException as e:
         traceback.print_exc()
