@@ -1,33 +1,30 @@
-"""Main file for the project. This file will run the scraper and download the files."""
+# main.py
 import sys
 import traceback
-from scraper import scrape_coach, EmptyVariableException
+from scraper import scrape_coach
 from download_files import download
 
-amount_of_files = 1500
-headless = True
-browser = "edge"
+def main():
+    amount_of_files = 1500
+    headless = True
+    browser = "edge"
 
-if len(sys.argv) > 1:
-    amount_of_files = int(sys.argv[1])
-if len(sys.argv) > 2:
-    headless = sys.argv[2].lower() in ['true', '1', 't', 'y', 'yes']
-if len(sys.argv) > 3:
-    browser = sys.argv[3].lower()
+    if len(sys.argv) > 1:
+        amount_of_files = int(sys.argv[1])
+    if len(sys.argv) > 2:
+        headless = sys.argv[2].lower() in ['true', '1', 't', 'y', 'yes']
+    if len(sys.argv) > 3:
+        browser = sys.argv[3].lower()
 
-if __name__ == "__main__":
     try:
         scrape_coach(amount_of_files=amount_of_files, headless=headless, browser=browser)
         continue_download = True
-    except EmptyVariableException as e:
-        traceback.print_exc()
-        print("[i] A possible fix might be deleting 'file_links.db'.")
-        continue_download = False
     except Exception as e:
         print("[!] A fatal error occurred while scraping the provadis coach!")
         print("[!] If this issue persists, consider reporting it.")
         traceback.print_exc()
-        continue_download = True
+        continue_download = False
+
     if continue_download:
         try:
             download()
@@ -37,3 +34,6 @@ if __name__ == "__main__":
             traceback.print_exc()
 
     input("[i] Press return to close this window.")
+
+if __name__ == "__main__":
+    main()
