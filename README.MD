@@ -30,6 +30,7 @@ PASSWORD=deinpasswort
 ```
 5. Starten des Scripts:
 python main.py [Anzahl_der_Dateien] [headless] [browser]
+
 Der browser kann optional auf firefox durch das Browser-Argument gesetzt werden, Standardmäßig wird Edge benutzt.
 # Beispiel:
 ```(bash)
