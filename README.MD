@@ -3,7 +3,7 @@
 Dieses Projekt scrapt Dateien von der Provadis Coach Website und speichert sie lokal. Es unterstützt sowohl lokale Ausführung als auch die Ausführung in einem Docker-Container.
 
 ## Installation mit Python (keine Git-Integration)
-Für Docker, [Installation mit Docker](##docker-setup)
+Für Docker, [Installation mit Docker](#docker-setup)
 
 ### Voraussetzungen
 
