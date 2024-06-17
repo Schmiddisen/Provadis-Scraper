@@ -1,8 +1,14 @@
-# download_files.py
 import os
 import json
 import requests
 from utils import DatabaseHandler, find_or_create_folder
+import subprocess
+
+def sync_with_git():
+    subprocess.run(["git", "pull", "origin", "master"])
+    subprocess.run(["git", "add", "."])
+    subprocess.run(["git", "commit", "-m", "Update scraped files"])
+    subprocess.run(["git", "push", "origin", "master"])
 
 def download():
     try:
@@ -39,3 +45,4 @@ def download():
             except FileNotFoundError as e:
                 print(f"[!] Error while writing file: {e}")
     print("[i] finished downloading files.")
+    sync_with_git()

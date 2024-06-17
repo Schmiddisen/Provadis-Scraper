@@ -33,7 +33,5 @@ def main():
             print("[!] If this issue persists, consider reporting it.")
             traceback.print_exc()
 
-    input("[i] Press return to close this window.")
-
 if __name__ == "__main__":
     main()
