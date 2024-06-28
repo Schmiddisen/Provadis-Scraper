@@ -8,7 +8,7 @@ def sync_with_git():
     subprocess.run(["git", "pull", "origin", "master"])
     subprocess.run(["git", "add", "."])
     subprocess.run(["git", "commit", "-m", "Update scraped files"])
-    subprocess.run(["git", "push", "origin", "master"])
+    subprocess.run(["git", "push", "origin", "main"])
 
 def download():
     try:
