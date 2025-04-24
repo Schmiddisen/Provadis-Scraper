@@ -9,7 +9,7 @@ Für Docker, [Installation mit Docker](#docker-setup)
 
 - Python 3.6+
 - Git
-- Microsoft Edge oder Firefox muss auf dem System installiert sein
+- Firefox muss auf dem System installiert sein
 
 ### Virtuelle Umgebung einrichten
 
