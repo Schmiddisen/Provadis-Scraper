@@ -7,7 +7,7 @@ from download_files import download
 def main():
     amount_of_files = 1500
     headless = True
-    browser = "edge"
+    browser = "firefox"
 
     if len(sys.argv) > 1:
         amount_of_files = int(sys.argv[1])

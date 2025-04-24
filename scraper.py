@@ -3,19 +3,24 @@ import json
 import os
 from time import sleep
 from dotenv import load_dotenv
-from msedge.selenium_tools import Edge, EdgeOptions
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
+from webdriver_manager.firefox import GeckoDriverManager
 from selenium.common.exceptions import *
 from utils import DatabaseHandler
 
 load_dotenv()
 LOGIN_URL = "https://hochschule.provadis-coach.de/view.php?view=files"
-EMAIL = os.getenv("EMAIL")
-PASSWORD = os.getenv("PASSWORD")
+EMAIL = os.getenv("EMAIL", "")
+PASSWORD = os.getenv("PASSWORD", "")
+
+if not EMAIL or not PASSWORD:
+    raise RuntimeError("EMAIL and PASSWORD must be set in the environment")
+
 db_handler = DatabaseHandler()
 
 def login_process_microsoft(driver):
@@ -69,26 +74,16 @@ def process_table_rows(table_rows, db_handler, driver):
         table_rows_new = get_table_rows(driver)
         process_table_rows(table_rows_new, db_handler, driver)
 
-def scrape_coach(amount_of_files=0, headless=True, browser="edge"):
+def scrape_coach(amount_of_files=0, headless=True, browser="firefox"):
     print("[i] Beginning scraping process!")
     print(f"[i] Checking the first {amount_of_files} files")
 
-    if browser == "edge":
-        options = EdgeOptions()
-        options.use_chromium = True
-        options.add_argument("--inprivate")
-        if headless:
-            options.add_argument("--headless")
-        options.add_argument("--log-level=OFF")
-        driver = Edge(options=options, executable_path="./msedgedriver.exe")
-    elif browser == "firefox":
-        from webdriver_manager.firefox import GeckoDriverManager
-        options = webdriver.FirefoxOptions()
-        if headless:
-            options.add_argument("--headless")
-        driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
-    else:
-        raise ValueError(f"Unsupported browser: {browser}")
+    options = webdriver.FirefoxOptions()
+    if headless:
+        options.add_argument("--headless")
+    service = Service(executable_path=GeckoDriverManager().install(),
+                      service_args=["--allow-hosts", "localhost"])
+    driver = webdriver.Firefox(service=service, options=options)
 
     driver.get(LOGIN_URL)
 

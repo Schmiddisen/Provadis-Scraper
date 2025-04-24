@@ -1,6 +1,6 @@
-urllib3==1.25.11
-requests
-selenium==3.141
-msedge-selenium-tools
-python-dotenv
-webdriver-manager
+urllib3>=2.4.0
+requests>=2.32.3
+selenium>=4.31.0
+selenium-tools>=0.0.2
+python-dotenv>=1.1.0
+webdriver-manager>=4.0.2
